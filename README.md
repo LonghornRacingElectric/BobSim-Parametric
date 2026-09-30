@@ -1,5 +1,29 @@
 # BobSim
 
+## LHRe parameterized suspension research fork
+
+This fork adds a **hardpoint-free 6DOF suspension model** with explicit roll
+center heights, camber gain and spring/wheel motion ratios. Start with
+[`parametric_vehicle.yml`](parametric_vehicle.yml) and the
+[parameterized suspension guide](docs/parametric-suspension.md).
+
+```bash
+git submodule update --init --recursive
+make parametric-test
+make parametric-rc-coupled
+```
+
+The paired sweep raises both RCs while matching baseline front LLTD at one
+steady operating point. It saves four tire normal loads and Ay/roll responses;
+transient LLTD is measured rather than constrained. The supplied vehicle is
+illustrative and uncorrelated. Docker CI passed 396 tests (6 skipped); two
+original Modelica baseline comparisons remain unresolved, as documented in the
+guide. Treat this as a research snapshot, not a validated LHRe vehicle model.
+
+All pilot and paired-sweep data, plots, inputs and convergence evidence are
+archived in the [LHRe simulation study](https://github.com/LonghornRacingElectric/lhre-simulation/tree/codex/parameterized-bobsim/studies/parameterized-bobsim).
+The upstream BobDyn workspace and its original workflows are described below.
+
 BobSim is the BobDyn high-fidelity vehicle analysis workspace. It wraps the
 BobLib Modelica vehicle models in a local browser app for configuring vehicles,
 writing BobLib-backed Modelica definitions, running standard studies, exploring
