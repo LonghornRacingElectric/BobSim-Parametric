@@ -1,4 +1,5 @@
 PYTHON ?= python
+PARAMETRIC_ARGS ?=
 RUFF_CACHE_DIR ?= /tmp/bobsim-ruff-cache
 MYPY_CACHE_DIR ?= /tmp/bobsim-mypy-cache
 
@@ -81,6 +82,13 @@ CLEAN_DOCKER_IMAGE ?= bobdyn/bobsim:latest
 
 .DEFAULT_GOAL := help
 
+.PHONY: parametric-eval parametric-test
+parametric-eval:
+	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.parametric_eval $(PARAMETRIC_ARGS)
+
+parametric-test:
+	$(RUN) $(PYTHON) -m pytest tests/test_parametric.py -q
+
 .PHONY: help init docker-build docker-rebuild \
 	app deploy deploy-deps deploy-assets deploy-package deploy-release deploy-clean \
 	lint typecheck test regression-invariants regression-baseline ci \
@@ -134,6 +142,8 @@ help:
 		'  standard-eval-four-post    Run FourPostEval' \
 		'  standard-eval-all          Run all standard evaluations' \
 		'  reduced-eval               Run N-DOF step steer; optionally compare BobLib CSV' \
+		'  parametric-eval            Run hardpoint-free 6DOF RC/parameter sweep' \
+		'  parametric-test            Check parametric force paths and vehicle response' \
 		'    REDUCED_DOF=3|6|10|14 REDUCED_KINEMATICS=lookup|nonlinear' \
 		'  reduced-fidelity-suite     Overlay 3/6/10/14DOF discriminating maneuvers' \
 		'    REDUCED_MBD_DIR=<directory containing one BobLib CSV per case>' \

@@ -142,7 +142,14 @@ class VehicleDynamicsSystem(ABC):
             rotation,
             inputs,
         )
-        kinematics = self.parameters.kinematics.at(vertical.jounce_m)
+        # Optional pose-aware backend: analytic research suspensions supply
+        # road-relative tire inclination without changing the legacy backend.
+        pose_evaluator = getattr(self.parameters.kinematics, "at_pose", None)
+        kinematics = (
+            pose_evaluator(vertical.jounce_m, rotation, inputs.steering_rad)
+            if callable(pose_evaluator)
+            else self.parameters.kinematics.at(vertical.jounce_m)
+        )
         corner_positions = (
             self.parameters.corner_positions + kinematics.contact_patch_offsets_m
         )

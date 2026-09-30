@@ -9,6 +9,7 @@ Don't read the whole folder. Route by task:
 
 | Task | Read |
 | --- | --- |
+| Hardpoint-free suspension research | [`docs/parametric-suspension.md`](docs/parametric-suspension.md) |
 | Anything non-trivial, first time in the repo | [`docs/architecture.md`](docs/architecture.md) |
 | Running / building / testing something | [`docs/workflows.md`](docs/workflows.md) |
 | Parameter sweeps, sensitivities, target-metrics → vehicle | [`docs/doe-reverse-engineering.md`](docs/doe-reverse-engineering.md) |

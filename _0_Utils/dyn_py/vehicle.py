@@ -150,6 +150,7 @@ class Vehicle:
         method: str = "RK45",
         rtol: float = 1e-6,
         atol: float = 1e-8,
+        max_step_s: float = math.inf,
     ) -> TransientResult:
         """Integrate one fidelity while retaining the common vehicle definition."""
 
@@ -161,6 +162,7 @@ class Vehicle:
             method=method,
             rtol=rtol,
             atol=atol,
+            max_step_s=max_step_s,
         )
 
     def steady_state(

@@ -35,6 +35,7 @@ def simulate_transient(
     method: str = "RK45",
     rtol: float = 1e-6,
     atol: float = 1e-8,
+    max_step_s: float = np.inf,
 ) -> TransientResult:
     """Integrate any model in the family with a constant or callable input."""
 
@@ -43,6 +44,8 @@ def simulate_transient(
         raise ValueError("time_s must contain at least two samples.")
     if np.any(np.diff(evaluation_times) <= 0.0):
         raise ValueError("time_s must be strictly increasing.")
+    if np.isnan(max_step_s) or max_step_s <= 0:
+        raise ValueError("max_step_s must be positive.")
     initial = np.asarray(initial_state, dtype=float)
     if initial.shape != (model.state_size,):
         raise ValueError(
@@ -65,6 +68,7 @@ def simulate_transient(
         method=method,
         rtol=rtol,
         atol=atol,
+        max_step=max_step_s,
     )
     states = np.asarray(solution.y.T, dtype=float)
     signals: dict[str, FloatArray] = {

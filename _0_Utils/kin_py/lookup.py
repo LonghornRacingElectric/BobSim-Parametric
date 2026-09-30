@@ -21,7 +21,7 @@ from _0_Utils.kin_py.kinematics import CornerKinematics, CornerPointSet
 
 
 FloatArray = NDArray[np.float64]
-KinematicsMode = Literal["lookup", "nonlinear"]
+KinematicsMode = Literal["lookup", "nonlinear", "parametric"]
 
 
 @dataclass(frozen=True)

@@ -8,6 +8,7 @@ Read in this order:
 
 | Doc | Read it when |
 | --- | --- |
+| [parametric-suspension.md](parametric-suspension.md) | You want hardpoint-free RC, camber-gain or motion-ratio sweeps in the research fork. |
 | [architecture.md](architecture.md) | You need the `_0_` … `_5_` layer map and how data flows between them. Start here. |
 | [workflows.md](workflows.md) | You want to *run* something: app, standard studies, envelopes, sensitivities, tests. |
 | [doe-reverse-engineering.md](doe-reverse-engineering.md) | You are doing DOE work — sweeping parameters or going backwards from target performance metrics to a car. Start here for `make opt-standard`. |
