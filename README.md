@@ -11,12 +11,16 @@ center heights, camber gain and spring/wheel motion ratios. Start with
 git submodule update --init --recursive
 make parametric-test
 make parametric-rc-coupled
+make parametric-rc-matrix
+make parametric-rc-matrix-validate
 ```
 
 The paired sweep raises both RCs while matching baseline front LLTD at one
 steady operating point. It saves four tire normal loads and Ay/roll responses;
 transient LLTD is measured rather than constrained. The supplied vehicle is
-illustrative and uncorrelated. Docker CI passed 396 tests (6 skipped); two
+illustrative and uncorrelated. The RC matrix tunes ARB balance at each independent
+front/rear height and checks response time, overshoot and settling. Docker CI
+passed 400 tests (6 skipped); two
 original Modelica baseline comparisons remain unresolved, as documented in the
 guide. Treat this as a research snapshot, not a validated LHRe vehicle model.
 

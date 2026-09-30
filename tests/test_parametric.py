@@ -183,3 +183,41 @@ def test_paired_rc_constraint_only_changes_heights():
     assert abs(front_lltd(equal.output.normal_loads_n) - target) > 1e-3
     with pytest.raises(ValueError, match="undefined"):
         front_lltd([500, 500, 600, 600])
+
+
+@pytest.mark.parametrize("front,rear", [(10, 60), (60, 10), (20, 30)])
+def test_matrix_arb_tuning_retains_lltd_with_physical_rates(front, rear):
+    from _0_Utils.vehicle_io import load_yaml
+    from _3_StandardSim.ParametricEval.coupled_roll_center_sweep import evaluate_pair, front_lltd
+    from _3_StandardSim.ParametricEval.roll_center_matrix import ARB, RC, tune_arb
+
+    data = load_yaml(repo_root() / "parametric_vehicle.yml")
+    _, reference = evaluate_pair(data, repo_root(), 0.02, 0.03, 15, 8)
+    target = front_lltd(reference.output.normal_loads_n)
+    candidate = tune_arb(data, repo_root(), front, rear, target, 5000)
+    assert candidate["front"][ARB] >= 0
+    assert candidate["rear"][ARB] >= 0
+    assert candidate["front"][ARB] + candidate["rear"][ARB] == pytest.approx(5000)
+    _, trim = evaluate_pair(candidate, repo_root(), front / 1000, rear / 1000, 15, 8)
+    assert front_lltd(trim.output.normal_loads_n) == pytest.approx(target, abs=1e-8)
+    for axle in ("front", "rear"):
+        for key in (RC, ARB):
+            candidate[axle][key] = data[axle][key]
+    assert candidate == data
+    if (front, rear) == (60, 10):
+        with pytest.raises(ValueError, match="outside attainable"):
+            tune_arb(data, repo_root(), front, rear, target, 2700)
+
+
+def test_turnin_metrics_use_reference_threshold_and_detect_overshoot():
+    from _3_StandardSim.ParametricEval.roll_center_matrix import response_metrics
+
+    times = np.linspace(0, 4, 401)
+    ay = 2 * np.clip((times - 1) / 0.2, 0, 1)
+    ay[140] = 2.2
+    history = [{"time_s": str(t), "ay_mps2": str(v), "yaw_rate_radps": str(v / 10)} for t, v in zip(times, ay)]
+    metrics = response_metrics(history, {"ay_final": 1, "yaw_final": 0.1})
+    assert metrics["ay_t90_s"] == pytest.approx(0.09)
+    assert metrics["ay_rise_10_90_s"] == pytest.approx(0.16)
+    assert metrics["worst_overshoot_pct"] == pytest.approx(10)
+    assert metrics["ay_settling_2pct_s"] == pytest.approx(0.41)

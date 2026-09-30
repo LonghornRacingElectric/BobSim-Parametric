@@ -82,7 +82,13 @@ CLEAN_DOCKER_IMAGE ?= bobdyn/bobsim:latest
 
 .DEFAULT_GOAL := help
 
-.PHONY: parametric-eval parametric-test parametric-rc-coupled
+.PHONY: parametric-eval parametric-test parametric-rc-coupled parametric-rc-matrix parametric-rc-matrix-validate
+parametric-rc-matrix-validate:
+	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.validate_rc_matrix $(PARAMETRIC_ARGS)
+
+parametric-rc-matrix:
+	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.roll_center_matrix $(PARAMETRIC_ARGS)
+
 parametric-rc-coupled:
 	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.coupled_roll_center_sweep $(PARAMETRIC_ARGS)
 
@@ -147,6 +153,8 @@ help:
 		'  reduced-eval               Run N-DOF step steer; optionally compare BobLib CSV' \
 		'  parametric-eval            Run hardpoint-free 6DOF RC/parameter sweep' \
 		'  parametric-rc-coupled      Raise both RCs at matched steady front LLTD' \
+		'  parametric-rc-matrix       Sweep independent RC heights with balanced ARBs' \
+		'  parametric-rc-matrix-validate  Refine matrix shortlist and check other speeds' \
 		'  parametric-test            Check parametric force paths and vehicle response' \
 		'    REDUCED_DOF=3|6|10|14 REDUCED_KINEMATICS=lookup|nonlinear' \
 		'  reduced-fidelity-suite     Overlay 3/6/10/14DOF discriminating maneuvers' \

@@ -193,6 +193,99 @@ After adding the coupled runner, Docker CI passed lint, mypy and 396 tests
 parameterized suite contains 15 passing tests. A fresh full Modelica baseline
 regression again had 15 passes and the same two mismatches detailed below.
 
+## Independent RC matrix with ARB balancing
+
+```bash
+make parametric-rc-matrix
+make parametric-rc-matrix-validate
+```
+
+The matrix sweeps front and rear nominal RC independently over 10, 20, 30, 40,
+50 and 60 mm (36 cases). At each cell, a bounded scalar solve distributes a
+fixed total ARB roll stiffness between the axles to match front LLTD at 15 m/s
+and Ay = 8 m/s2. Only the two RC and two ARB fields change. Springs, dampers,
+camber functions, mass/CG and tire remain fixed. The rates are **effective axle
+roll stiffness in Nm/rad**, not torsion-bar shaft rates or wheel rates.
+
+Default front LLTD is the original setup's 46.737693%. `--target-front-lltd-pct`
+can select a different target. The original sum of 2700 Nm/rad cannot cover the
+full grid with nonnegative bars: at 60/10 mm the attainable front-LLTD range is
+48.519-54.223%, and at 10/60 mm it is 40.201-45.793%. The matrix therefore uses
+one common **5000 Nm/rad** total (`--total-arb`), which covers all 36 cells. This
+is an explicit research assumption, not a proven hardware range or an optimum
+total stiffness. The 20/30 mm comparison within the matrix also uses 5000 total;
+the unchanged original 1500/1200 Nm/rad setup is saved separately as `original`.
+Infeasible ARB splits are rejected, never clipped or assigned negative rates.
+
+Each case solves five steady Ay points (2, 4, 6, 8, 10 m/s2) and a 2-degree
+roadwheel input at 15 m/s, rising linearly over 0.15 s from t = 1 s. Runs end at
+4 s. Default output/maximum integration step is 5 ms, rtol 1e-8. Four worker
+processes run independent cases; `--workers 1` runs serially. `--heights-mm`,
+`--vehicle`, `--output`, `--dt`, and `--rtol` are also exposed by the runner.
+
+The ranking minimizes the average time from steer onset to 90% of the **same
+20/30 mm reference's final Ay and yaw rate**. It is not 10-90% rise time; both
+metrics are saved separately. Eligibility requires accepted numerical/domain
+checks, <=5% Ay/yaw overshoot, settling within 2% in <=1 s, and settled Ay/yaw
+within 1% of the reference. Threshold crossings interpolate saved samples;
+settling time is quantized to the output step. A Pareto flag identifies cases
+not dominated jointly on response time, overshoot and settling. The reference
+falls back to the original setup if a custom grid omits 20/30 mm.
+
+`generated_results/rc_matrix/` saves the full `summary.csv`, eligible
+`ranking.csv`, rectangular CSV matrices for response time/front ARB/rear ARB,
+`response_matrix.png`, `setup_matrix.png`, and `turn_in_comparison.png`. Every
+cell has reloadable `input.yml`, normal-load/Ay/yaw/roll/camber/jounce traces,
+steady data, numerical gates and source hashes. The common total and LLTD
+constraint are recorded in `manifest.json`. Steady LLTD is matched only at the
+reference point; transient LLTD is measured rather than held constant.
+
+The validation target reruns the original, reference, first two ranked cases,
+slowest case and minimum-roll case at 10, 15 and 20 m/s, using 2.5 ms and rtol
+1e-9. Identical tuned hardware parameters are retained at every speed. This is
+a shortlist speed check, not a second full matrix. See `validation_summary.csv`
+and `validation.json`; numerical validity and performance eligibility are
+separate fields.
+
+### Matrix results, 2026-09-29
+
+All 36 matrix cases passed numerical/domain checks and the stated 15 m/s
+performance gates. Front LLTD differed from the reference target by at most
+0.0721 percentage points across the 2-10 m/s2 steady checks. Effective front
+ARB stiffness ranged from 133.58 to 4348.53 Nm/rad; the rear rate is 5000 minus
+the front rate. No hardware feasibility is established by those scalar values.
+
+| Setup | Front/rear RC mm | Front/rear ARB Nm/rad | Mean t90 ms at 15 m/s | Worst overshoot % |
+| --- | --- | --- | ---: | ---: |
+| Fastest grid case | 60 / 10 | 133.58 / 4866.42 | 158.44 | 0.627 |
+| Runner-up | 60 / 20 | 530.72 / 4469.28 | 158.69 | 0.570 |
+| Common-stiffness reference | 20 / 30 | 2603.55 / 2396.45 | 159.99 | 0.522 |
+| Minimum roll | 60 / 60 | 2300.01 / 2699.99 | 159.54 | 0.433 |
+| Lowest overshoot / slowest | 10 / 60 | 4348.53 / 651.47 | 160.90 | 0.419 |
+
+The entire 15 m/s grid spans only 2.46 ms in this metric. Refined common-reference
+t90 is 158.376 ms for 60/10 versus 159.942 ms for 20/30: **1.566 ms (0.98%)**
+faster. Refined yaw t90 is 152.080 versus 153.062 ms, and Ay t90 is 164.672 versus
+166.823 ms. The 60/10 point's final Ay is 5.17137 m/s2 versus 5.17162 m/s2 for the
+reference, so it does not increase settled grip. This is a boundary trend in a
+finite grid, not an interior optimum. Its nearly disconnected front ARB and
+high rear ARB require hardware and model correlation before design use.
+
+All 18 validation runs passed numerical/domain checks. The fastest grid case
+remained fastest in the shortlist at 20 m/s: 206.260 versus 207.661 ms (0.67%)
+for the reference, with about 1.17% worst overshoot. At 10 m/s, all six checked
+setups, including the original, had approximately **19-20% Ay overshoot** and
+failed the 5% performance gate. No shortlisted setup met the chosen definition
+of good turn-in across all three speeds. This common low-speed transient needs
+further model/input scrutiny; no tire relaxation is represented.
+
+Refinement at common timestamps changed Ay by at most 7.06e-7 m/s2, yaw rate by
+5.83e-8 rad/s, and individual tire loads by 3.53e-5 N. Mean-t90 interpolation
+differences were at most 0.079 ms. The leading trend is numerically resolved in
+this model, but is much smaller than the unresolved physical-model uncertainty.
+Docker lint/mypy and 400 tests passed (6 skipped); focused parameterized tests:
+19 passed. Full Modelica regression remains subject to the limitations below.
+
 ## Scope and validation
 
 Only the 6DOF model is enabled through `load_parametric_vehicle`. The inherited
