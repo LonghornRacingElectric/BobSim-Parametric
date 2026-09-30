@@ -115,6 +115,84 @@ tire loads inside the TIR fit domain, final response settling and less than
 retaining its diagnostics. These gates are numerical/model-domain checks, not
 experimental validation. No performance optimum or maximum Ay is inferred.
 
+## Raising both roll centers at matched steady LLTD
+
+```bash
+make parametric-rc-coupled
+make parametric-rc-coupled PARAMETRIC_ARGS='--offsets-mm 0 25 50 75 100 --output _3_StandardSim/generated_results/coupled_rc'
+```
+
+The sweep increases front nominal RC in the requested nonnegative offsets and
+solves rear RC upward to retain the baseline **front total LLTD at 8 m/s2 and
+15 m/s**. LLTD is `(Fz_FR-Fz_FL)/[(Fz_FR-Fz_FL)+(Fz_RR-Fz_RL)]`, using direct
+simulated tire loads. Only the two RC inputs change; spring, ARB, damping,
+motion-ratio and camber-function inputs stay fixed. Rear search is bounded to
+baseline through baseline +200 mm; infeasible or invalid trims fail the study.
+
+Equal height increments do not generally preserve total LLTD. The runner saves
+an equal-increment diagnostic alongside the constrained pairs. It checks the
+resulting steady LLTD at Ay = 2, 4, 6, 8, 10 m/s2, then runs the same 2-degree
+roadwheel steer input for every pair (0.15 s rise starting at t = 1 s). Transient
+LLTD is measured, not held constant, and is suppressed where |Ay| < 1 m/s2.
+LLTD becomes ill-conditioned near zero transfer. This experiment constrains one
+steady operating point, not the entire handling envelope or dynamic balance.
+
+`generated_results/coupled_rc/` contains `summary.csv`, `lltd_vs_ay.csv`,
+`equal_increment_check.csv`, comparative Ay/roll/LLTD and four-tire-load PNGs,
+and a manifest. Each `pair_*/results/` retains the full standard parametric-study
+inputs, hashes, CSVs and numerical/domain acceptance checks. `--vehicle`, `--dt`
+and `--rtol` are supported; use separate output directories to retain reruns.
+
+### Illustrative paired sweep, 2026-09-29
+
+All 25 matched-Ay points and five transients passed their acceptance gates.
+Front LLTD was 46.737693% at the reference Ay for all five pairs:
+
+| Front RC (mm) | Rear RC (mm) | Roll at 8 m/s2 (deg) |
+| ---: | ---: | ---: |
+| 20 | 30.000 | 0.84166 |
+| 45 | 52.626 | 0.76753 |
+| 70 | 75.253 | 0.69386 |
+| 95 | 97.879 | 0.62065 |
+| 120 | 120.505 | 0.54789 |
+
+At the endpoints, equal +100 mm increments (20/30 to 120/130 mm) would instead
+reduce front LLTD to 45.903991%, a -0.833702 percentage-point change. The solved
+rear increase was 90.505 mm. Across the 2-10 m/s2 steady grid, the largest LLTD
+departure from the baseline at the same Ay was 0.106950 percentage points.
+
+Endpoint results (baseline to highest pair):
+
+- Body roll at matched 8 m/s2 fell 34.9%. The geometric share of total axle
+  load differences increased from 8.57% to 40.33%.
+- Steady Fz (FL/FR/RL/RR) changed from 356.70/882.69/453.38/1052.80 N to
+  357.48/881.94/454.32/1052.00 N: less than 1 N per tire.
+- Final Ay after the steer input changed from 5.171664 to 5.171549 m/s2
+  (-0.00222%). These are finite-input responses, not maximum lateral grip.
+- The maximum common-time Ay difference during turn-in was 0.08104 m/s2;
+  individual tire-load differences reached 12.09 N. Raising RC therefore has
+  a measurable transient effect despite the nearly identical settled loads.
+- At t = 1.040 s, front LLTD was 50.88% baseline versus 59.64% highest RC,
+  +8.76 percentage points. This is early turn-in at about 1.16 m/s2 in the high
+  case, not the matched steady condition. Peak percentages depend strongly on
+  the low-Ay gate and sample times: the finer run reaches +9.31 points with both
+  cases above 1 m/s2, and +2.29 points with both above 4 m/s2.
+
+Numerical audit: reran the endpoint pairs with 2.5 ms output/maximum integration
+step and rtol 1e-9, versus 5 ms and 1e-8. At common timestamps, maximum Ay error
+was 4.95e-7 m/s2, individual Fz error 2.47e-5 N and LLTD error 2.94e-6 percentage
+points. Interpolated 10-90% rise-time reduction was about 0.30 ms (coarser run:
+0.28 ms); do not treat this tiny input-dependent difference as a design benefit.
+The saved `convergence.json` includes endpoint effects and refinement errors;
+`turn_in.png` expands the first 0.8 s of the response. The convergence audit
+script is retained beside these generated artifacts. This is numerical
+agreement within the illustrative reduced model, not car correlation.
+
+After adding the coupled runner, Docker CI passed lint, mypy and 396 tests
+(6 skipped; saved standard-study artifacts were available). The focused
+parameterized suite contains 15 passing tests. A fresh full Modelica baseline
+regression again had 15 passes and the same two mismatches detailed below.
+
 ## Scope and validation
 
 Only the 6DOF model is enabled through `load_parametric_vehicle`. The inherited

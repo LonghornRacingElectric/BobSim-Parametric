@@ -157,8 +157,29 @@ def test_camber_and_motion_ratio_grid_has_distinct_cases():
 
 def test_rise_time_interpolates_between_samples():
     from _3_StandardSim.ParametricEval.parametric_eval import threshold_time
+
     times = np.array([1.0, 1.1, 1.2, 1.3])
     response = np.array([0.0, 0.5, 1.0, 1.0])
     assert threshold_time(times, response, 0.1) == pytest.approx(1.02)
     assert threshold_time(times, response, 0.9) == pytest.approx(1.18)
     assert threshold_time(times, response, 2) is None
+
+
+def test_paired_rc_constraint_only_changes_heights():
+    from _3_StandardSim.ParametricEval.coupled_roll_center_sweep import evaluate_pair, front_lltd, solve_rear_height
+    from _0_Utils.vehicle_io import load_yaml
+
+    data = load_yaml(repo_root() / "parametric_vehicle.yml")
+    _, baseline = evaluate_pair(data, repo_root(), 0.02, 0.03, 15, 8)
+    target = front_lltd(baseline.output.normal_loads_n)
+    rear = solve_rear_height(data, repo_root(), 0.12, target, 15, 8)
+    candidate, raised = evaluate_pair(data, repo_root(), 0.12, rear, 15, 8)
+    assert rear > 0.03
+    assert front_lltd(raised.output.normal_loads_n) == pytest.approx(target, abs=1e-8)
+    candidate["front"]["roll_center_height_m"] = 0.02
+    candidate["rear"]["roll_center_height_m"] = 0.03
+    assert candidate == data
+    _, equal = evaluate_pair(data, repo_root(), 0.12, 0.13, 15, 8)
+    assert abs(front_lltd(equal.output.normal_loads_n) - target) > 1e-3
+    with pytest.raises(ValueError, match="undefined"):
+        front_lltd([500, 500, 600, 600])
