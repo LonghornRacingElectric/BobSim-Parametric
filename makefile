@@ -83,6 +83,18 @@ CLEAN_DOCKER_IMAGE ?= bobdyn/bobsim:latest
 .DEFAULT_GOAL := help
 
 .PHONY: parametric-eval parametric-test parametric-rc-coupled parametric-rc-matrix parametric-rc-matrix-validate
+.PHONY: parametric-2027-targets
+parametric-2027-targets:
+	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.targets_2027 $(PARAMETRIC_ARGS)
+
+.PHONY: parametric-2027-test
+parametric-2027-test:
+	$(RUN) $(PYTHON) -m pytest tests/test_parametric_2027.py -q
+
+.PHONY: parametric-2027-report
+parametric-2027-report:
+	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.report_2027_targets $(PARAMETRIC_ARGS)
+
 parametric-rc-matrix-validate:
 	$(RUN) $(PYTHON) -m _3_StandardSim.ParametricEval.validate_rc_matrix $(PARAMETRIC_ARGS)
 
@@ -156,6 +168,9 @@ help:
 		'  parametric-rc-matrix       Sweep independent RC heights with balanced ARBs' \
 		'  parametric-rc-matrix-validate  Refine matrix shortlist and check other speeds' \
 		'  parametric-test            Check parametric force paths and vehicle response' \
+		'  parametric-2027-targets    Run a 2027 mechanical target study phase' \
+		'  parametric-2027-report     Summarize conditional 2027 model-test targets' \
+		'  parametric-2027-test       Check 2027 projection and level-road trim' \
 		'    REDUCED_DOF=3|6|10|14 REDUCED_KINEMATICS=lookup|nonlinear' \
 		'  reduced-fidelity-suite     Overlay 3/6/10/14DOF discriminating maneuvers' \
 		'    REDUCED_MBD_DIR=<directory containing one BobLib CSV per case>' \

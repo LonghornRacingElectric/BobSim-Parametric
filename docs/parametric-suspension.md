@@ -307,6 +307,60 @@ The pose-aware hook is optional; legacy hardpoint backends follow their original
 code path. Run repository checks and the full regression workflow when changing
 shared physics; report unavailable or failed checks instead of altering baselines.
 
+## Parameterized 2027 target study
+
+`make parametric-2027-targets PARAMETRIC_ARGS='--phase pilot'` projects the frozen
+`_3_StandardSim/ParametricEval/configs/2027_source.yml` into a standalone
+`_3_StandardSim/generated_results/targets_2027_level_trim/vehicle.yml` and tire.
+The projection uses the source `frame_torsion_study` workbook values: 271.248 kg,
+292.1 mm total CG height, 45% front static load and 1549.4 mm wheelbase. It takes
+effective roll rates from that block and derives spring/wheel motion ratios.
+The component inertia is retained after translating the sprung centroid to the
+workbook CG. No hardpoint solver or cached FourPost lookup supplies kinematics.
+
+Run phases `pilot`, `roll`, `longitudinal`, `validation`, then `refinement`, followed
+by `make parametric-2027-report`. `--workers 4` and `--output PATH` are supported.
+Make uses Docker. `configs/2027_targets.yml` records the descriptive study contract;
+the runner defines the actual maneuvers and grids. It is not a runtime config.
+Each phase saves inputs, traces, summary/failure reasons and source hashes.
+The report generates two editable `candidate_nominal25.yml` and
+`candidate_nominal50.yml` inputs alongside the zero-anti projected control.
+
+The RC grid spans 10-60 mm at both axles. ARBs are redistributed within the fixed
+4421.95 Nm/rad source total to match 50.646511% front LLTD at 15 m/s and Ay=8 m/s2.
+Only 19 of 36 pairs fit this nonnegative-ARB bracket. This does not establish
+physical infeasibility of the other pairs. Transient LLTD is not held fixed.
+
+The conditional next-test RC window is front 50-60 / rear 10-20 mm, starting at
+50/20 mm. Test front anti-dive and rear anti-squat at 25% and 50%, preserving zero
+controls. These are platform-response experiments; the model does not identify
+an optimum anti percentage. `with_longitudinal_anti` converts reference fractions
+to `longitudinal_jacking_coefficient = Fz_geo/Fx`: front
+`-AD*h/(L*front_brake_fraction)`, rear `AS*h/(L*rear_drive_fraction)`.
+This is a total-vehicle nominal flat-road convention, not a sprung-mass convention.
+The same reciprocal translating-upright path applies under braking and driving;
+with RWD and 84% front braking, rear brake anti-lift is AS times 0.16. Caliper,
+halfshaft and rotor reaction paths still require validation against the real car.
+
+The study uses `solve_level_trim` to prevent the legacy QSS helper's nonzero
+world vertical velocity at nonzero pitch/roll. It enforces zero world height,
+roll/pitch rates and damper speeds while solving the unchanged 6DOF equations.
+Finite-pose body-z contact force approximations remain; this is a screening model.
+
+The source aero map implies negative front aerodynamic load under BobSim's
+free-moment convention, so aero is withheld explicitly. Camber/toe migration and
+longitudinal anti are unidentified from the workbook: zero values are controls,
+not measured geometry. The +/-30 mm travel envelope is provisional. Chassis
+torsion, tire relaxation, wheel hop, compliance and rough-road grip are absent.
+Every checked 10 m/s setup fails the chosen 5% Ay overshoot gate. Thus these
+settings are **conditional model-test targets, not hardware-release targets**.
+
+`make parametric-2027-test` checks the projection, force-path normalization and
+reversal, level trim and fixed-geometry load-transfer limit. On 2026-09-30, all
+seven passed; the full Python suite passed 407 tests with six skipped. Lint and
+mypy passed. A fresh Modelica regression again passed 15 and failed the same
+two comparisons below; its sources, configs and baselines were not changed.
+
 ## Verification on 2026-09-29
 
 - Docker lint and mypy passed. Repository suite: 382 passed, 18 skipped.

@@ -1,0 +1,672 @@
+# 2027 baseline derived from Orion + live 2027 K&C (2026-09-27).
+# Provisional hardpoints/inertia. FrameTorsionEval overrides are NOT used by standard Modelica.
+schema: boblib.vehicle.v1
+vehicle:
+  name: '2027'
+  version: 0.1.0
+architecture:
+  front: bellcrank_stabar
+  rear: bellcrank_stabar
+paths:
+  boblib: _0_Utils/external/BobLib/BobLib
+  tire_templates: _0_Utils/tire_templates
+sprung_mass:
+  mass_kg: 170.32107202
+  cg_m:
+  - -0.9914616670450445
+  - -2.316950376839347e-06
+  - 0.27178930394449385
+  inertia_kg_m2:
+  - - 11.016159974401148
+    - 0.31807969127241037
+    - -0.9860470429444723
+  - - 0.31807969127241037
+    - 59.35367039143178
+    - -0.05301328187873507
+  - - -0.9860470429444723
+    - -0.05301328187873507
+    - 60.1700749323643
+driver_mass:
+  mass_kg: 65.770912
+  cg_m:
+  - -0.541837
+  - 6.0e-06
+  - 0.395782
+  inertia_kg_m2:
+  - - 2.241988
+    - 0.000284
+    - -1.975938
+  - - 0.000284
+    - 7.621387
+    - -5.3e-05
+  - - -1.975938
+    - -5.3e-05
+    - 6.749042
+body:
+  torsional_stiff_n_m_per_rad: 32082.932891947403
+brake:
+  front_bias: 0.84
+front:
+  wheel:
+    radius_m: 0.2045
+    rim_radius_ratio: 0.625
+    rim_width_ratio: 1.4
+    toe_deg: 0
+    camber_deg: 0
+  tire:
+    wheel_inertia_kg_m2: 0.02
+    vertical_stiffness_n_per_m: 98946.66191425915
+    vertical_damping_n_s_per_m: 115.844
+    template: 16x7p5_10_12psi
+  suspension:
+    upper_fore_i_m:
+    - 0.1016
+    - 0.24409414770995658
+    - 0.2143252
+    upper_aft_i_m:
+    - -0.0680974
+    - 0.2419296376394516
+    - 0.215138
+    lower_fore_i_m:
+    - 0.1016
+    - 0.23235885214697788
+    - 0.08001
+    lower_aft_i_m:
+    - -0.0762
+    - 0.23235885214697788
+    - 0.08001
+    upper_o_m:
+    - -0.0092964
+    - 0.556487715596449
+    - 0.2679954
+    lower_o_m:
+    - 0.0029972
+    - 0.5780285025631611
+    - 0.1139952
+    tie_o_m:
+    - 0.0569976
+    - 0.5615990887749908
+    - 0.1522222
+    wheel_center_m:
+    - 0
+    - 0.6223
+    - 0.199898
+  steering:
+    rack_pickup_m:
+    - 0.05715
+    - 0.2320459109319651
+    - 0.1137158
+    rack_travel_per_rev_m: 0.0879
+  actuation:
+    rod_to: lower
+    rod_mount_m:
+    - 0.006762552642
+    - 0.5396497494893338
+    - 0.134465050856
+    shock:
+      mount_m:
+      - -0.020673469702
+      - 0.2544670868129891
+      - 0.561456926868
+      spring_table:
+        table:
+        - - 0
+          - 0
+        - - 1
+          - 26269.025286971457
+      free_length_m: 0.1997
+      damper_table:
+        table:
+        - - -1
+          - -850
+        - - 0
+          - 0
+        - - 1
+          - 850
+    bellcrank:
+      pivot_m:
+      - -0.042144464098
+      - 0.2574520064413993
+      - 0.370010000136
+      axis:
+      - 0.95754655
+      - -0.26587315
+      - -0.11142744
+      pickups_m:
+        rod:
+        - -0.014493326106
+        - 0.35771682997443655
+        - 0.374614186762
+        shock:
+        - -0.01102742905
+        - 0.3547642815068759
+        - 0.411259910778
+        stabar:
+        - -0.029010173628
+        - 0.30507779767174886
+        - 0.37219698865
+      order:
+      - rod
+      - shock
+      - stabar
+    stabar:
+      arm_end_m:
+      - -0.03682914
+      - 0.27382356313616923
+      - 0.11597939
+      bar_end_m:
+      - -0.10664664
+      - 0.27382356313616923
+      - 0.11811
+      rate_n_m_per_rad: 257.62483055
+  masses:
+    unsprung:
+      mass_kg: 7.71107029
+      cg_m:
+      - 0
+      - 0.6177132371867645
+      - 0.1980248
+      inertia_kg_m2:
+      - - 0.10433677583358697
+        - 0.0003613102784230874
+        - 0.0006014839275140059
+      - - 0.0003613102784230874
+        - 0.15838534933739468
+        - -0.0007583434915601288
+      - - 0.0006014839275140059
+        - -0.0007583434915601288
+        - 0.10656642319805128
+    upper_control_arm:
+      mass_kg: 0.55776965
+      cg_m:
+      - -0.00187916
+      - 0.47078877413230363
+      - 0.25343195
+      inertia_kg_m2:
+      - - 0.00700626
+        - -0.00058434
+        - -0.0001073
+      - - -0.00058434
+        - 0.0011635
+        - 0.00116272
+      - - -0.0001073
+        - 0.00116272
+        - 0.00762498
+    lower_control_arm:
+      mass_kg: 0.5182905
+      cg_m:
+      - 0.00803455
+      - 0.41665732598016075
+      - 0.09882118
+      inertia_kg_m2:
+      - - 0.00649759
+        - -0.00017572
+        - -1.824e-05
+      - - -0.00017572
+        - 0.00145437
+        - 0.00068888
+      - - -1.824e-05
+        - 0.00068888
+        - 0.00776251
+    tie_rod:
+      mass_kg: 0.13459415
+      cg_m:
+      - 0.05709287
+      - 0.35541090057377683
+      - 0.1281302
+      inertia_kg_m2:
+      - - 0.00178949
+        - -8.3e-07
+        - -1e-07
+      - - -8.3e-07
+        - 2.994e-05
+        - 0.00021109
+      - - -1e-07
+        - 0.000211
+        - 0.001764
+rear:
+  wheel:
+    radius_m: 0.2045
+    rim_radius_ratio: 0.625
+    rim_width_ratio: 1.4
+    toe_deg: 0
+    camber_deg: 0
+  tire:
+    wheel_inertia_kg_m2: 0.02
+    vertical_stiffness_n_per_m: 98946.66191425915
+    vertical_damping_n_s_per_m: 115.844
+    template: 16x7p5_10_12psi
+  suspension:
+    upper_fore_i_m:
+    - -1.279144
+    - 0.29271392837979104
+    - 0.2482342
+    upper_aft_i_m:
+    - -1.4993874
+    - 0.2795315458591835
+    - 0.2434336
+    lower_fore_i_m:
+    - -1.3142214
+    - 0.2791563357305134
+    - 0.086868
+    lower_aft_i_m:
+    - -1.4998192
+    - 0.27920636374766944
+    - 0.0872236
+    upper_o_m:
+    - -1.5540736
+    - 0.518765523899204
+    - 0.29464
+    lower_o_m:
+    - -1.55448
+    - 0.567817994720668
+    - 0.116078
+    tie_o_m:
+    - -1.45796
+    - 0.5735462026850306
+    - 0.2143506
+    wheel_center_m:
+    - -1.5494
+    - 0.5969
+    - 0.199898
+  steering:
+    rack_pickup_m:
+    - -1.3763498
+    - 0.28530978184070216
+    - 0.1700022
+    rack_travel_per_rev_m: 0.0889
+  actuation:
+    rod_to: upper
+    rod_mount_m:
+    - -1.53509479
+    - 0.4956602909844351
+    - 0.26648017
+    shock:
+      mount_m:
+      - -1.50192144
+      - 0.2844574147263544
+      - 0.36889916
+      spring_table:
+        table:
+        - - 0
+          - 0
+        - - 1
+          - 43781.70881161909
+      free_length_m: 0.2634
+      damper_table:
+        table:
+        - - -1
+          - -1300
+        - - 0
+          - 0
+        - - 1
+          - 1300
+    bellcrank:
+      pivot_m:
+      - -1.39886851
+      - 0.28785930019689304
+      - 0.1016
+      axis:
+      - 0.887962410598
+      - 0.302708516859
+      - 0.346251803151
+      pickups_m:
+        rod:
+        - -1.41267566
+        - 0.3466244052601144
+        - 0.08484064
+        shock:
+        - -1.43801295
+        - 0.35588124290383427
+        - 0.14160048
+        stabar:
+        - -1.41346984
+        - 0.30585597334955783
+        - 0.12306883
+      order:
+      - rod
+      - shock
+      - stabar
+    stabar:
+      arm_end_m:
+      - -1.43001283
+      - 0.29860472739991073
+      - 0.4054766
+      bar_end_m:
+      - -1.3925183
+      - 0.29860472739991073
+      - 0.41224196
+      rate_n_m_per_rad: 0
+  masses:
+    unsprung:
+      mass_kg: 7.71107029
+      cg_m:
+      - -1.5494
+      - 0.5907818197026923
+      - 0.20113454
+      inertia_kg_m2:
+      - - 0.16258560739239386
+        - -0.0748957949289437
+        - 0.0004680634520300747
+      - - -0.0748957949289437
+        - 0.26948473218047314
+        - -0.0018747709549448753
+      - - 0.0004680634520300747
+        - -0.0018747709549448753
+        - 0.2667834980181255
+    upper_control_arm:
+      mass_kg: 0.34927896
+      cg_m:
+      - -1.47556121
+      - 0.41621135827696976
+      - 0.27196898
+      inertia_kg_m2:
+      - - 0.00248293
+        - -0.00169357
+        - -0.00031129
+      - - -0.00169357
+        - 0.00276385
+        - 0.00045612
+      - - -0.00031129
+        - 0.00045612
+        - 0.00504556
+    lower_control_arm:
+      mass_kg: 0.46311564
+      cg_m:
+      - -1.47625848
+      - 0.4235772747446807
+      - 0.10156115
+      inertia_kg_m2:
+      - - 0.00434917
+        - -0.00226155
+        - -0.0002268
+      - - -0.00226155
+        - 0.00268231
+        - 0.00042397
+      - - -0.0002268
+        - 0.00042397
+        - 0.0069183
+    tie_rod:
+      mass_kg: 0.13293714
+      cg_m:
+      - -1.40704567
+      - 0.3937232130753921
+      - 0.18668273
+      inertia_kg_m2:
+      - - 0.00146339
+        - -0.00039766
+        - -6.025e-05
+      - - -0.00039766
+        - 0.00014812
+        - 0.0002161
+      - - -6.025e-05
+        - 0.0002161
+        - 0.00154153
+aero:
+  reference_speed_m_per_s: 15
+  aero_ref_m:
+  - 1
+  - 0
+  - 0
+  front_left_ride_height_ref_m:
+  - 0
+  - 0.606110767456
+  - 0.199898
+  rear_left_ride_height_ref_m:
+  - -1.5494
+  - 0.60611077
+  - 0.199898
+  front_ride_height_grid_m:
+  - 0.03556
+  - 0.05334
+  - 0.07112
+  - 0.0889
+  - 0.10668
+  rear_ride_height_grid_m:
+  - 0.04191
+  - 0.0635
+  - 0.08382
+  - 0.10414
+  - 0.12573
+  drag_table_n:
+  - - 161.5972
+    - 161.9498
+    - 163.687
+    - 159.2334
+    - 154.50145
+  - - 164.547
+    - 164.7349
+    - 172.3558
+    - 172.1838
+    - 170.2062
+  - - 159.2388
+    - 167.52
+    - 172.4602
+    - 176.457
+    - 180.1312
+  - - 156.3824
+    - 162.2704
+    - 169.104
+    - 174.6198
+    - 178.8624
+  - - 155.6694
+    - 157.0208
+    - 165.7478
+    - 169.332
+    - 174.9112
+  downforce_table_n:
+  - - 323.4758
+    - 306.2802
+    - 265.3572
+    - 215.9386
+    - 163.4313375
+  - - 294.4118
+    - 301.2197
+    - 341.5206
+    - 331.72
+    - 301.3074
+  - - 263.8606
+    - 296.1592
+    - 319.799
+    - 339.5682
+    - 351.2746
+  - - 238.4332
+    - 261.4048
+    - 286.5552
+    - 305.715
+    - 332.3768
+  - - 219.5836
+    - 226.6504
+    - 253.3114
+    - 284.1392
+    - 304.1904
+  mx_table_nm:
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  my_table_nm:
+  - - -825.9932
+    - -825.4692
+    - -808.9816
+    - -764.9962
+    - -718.2617125
+  - - -755.724
+    - -801.5983
+    - -877.6862
+    - -874.8364
+    - -858.4004
+  - - -697.1832
+    - -777.7274
+    - -832.2982
+    - -876.6466
+    - -904.583
+  - - -644.1302
+    - -696.543
+    - -757.7346
+    - -799.6382
+    - -860.9186
+  - - -607.5192
+    - -615.3586
+    - -683.171
+    - -758.2042
+    - -802.5116
+  mz_table_nm:
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  tire_template: 16x7p5_10_12psi
+powertrain:
+  implementation: EVBatInvMotDiff
+  pBattery:
+    Ns: 140
+    Np: 4
+    SOC_start: 1
+  pVCU:
+    tau_max: 230
+    P_max_mot: 80000
+    regenTorqueLimit: 220
+    w_eps: 1
+    motorSpeedSign: 1
+  pInverter:
+    P_max_mot: 124000
+    P_max_reg: 124000
+    V_dc_max: 588
+  pMotor:
+    Vdc_max: 630
+    rpm_max_peak: 6500
+    T_peak: 220
+    T_cont: 130
+    I_peak_2min: 360
+    I_cont: 180
+    Kt_Nm_per_A: 0.61
+    peakTime: 120
+    P_mech_peak: 124000
+    P_cont_low: 75000
+    P_cont_high: 75000
+    eta_mot: 0.96
+    eta_reg: 0.95
+    w_eps: 1
+    rotorJ: 0.02521
+  pDriveline:
+    finalDriveRatio: 3.31
+    diffInputRotorJ: 0.04
+    diff_use_lsd: true
+    diff_driveSideTorqueSign: 1
+    diff_T_preload: 20
+    diff_lockFractionAccel: 0.35
+    diff_lockFractionDecel: 0.15
+    diff_T_capacity_max: 1000
+    diff_clutchEffectiveRadius: 1
+    diff_kineticFrictionRatio: 0.85
+    diff_w_transition: 1
+    diff_c_viscous: 0.05
+    halfshaftLeftC: 15000
+    halfshaftLeftJEquivalent: 0.02
+    halfshaftLeftD: 34.64101615137755
+    halfshaftRightC: 15000
+    halfshaftRightJEquivalent: 0.02
+    halfshaftRightD: 34.64101615137755
+frame_torsion_study:
+  schema: bobsim.frame_torsion_screen.v1
+  status: provisional_Orion_geometry_and_inertia
+  source_workbook: https://utexas.sharepoint.com/:x:/r/sites/ENGR-LonghornRacing/_layouts/15/Doc.aspx?sourcedoc=%7B04541B1F-3B28-41A7-958D-7E33F5588446%7D&file=2027%20K%26C.xlsx&action=default&mobileredirect=true
+  cg_bias_basis: total_car_user_confirmed
+  cg_height_basis: total_car_assumed
+  sprung_mass_kg: 240.40395610000002
+  unsprung_axle_mass_kg:
+  - 15.42214058
+  - 15.42214058
+  total_mass_kg: 271.24823726
+  total_front_weight_fraction: 0.45
+  sprung_front_weight_fraction: 0.44358490566037734
+  total_cg_height_m: 0.29209999999999997
+  sprung_cg_height_m: 0.30397053290566023
+  wheelbase_m: 1.5493999999999999
+  track_m:
+  - 1.2446
+  - 1.1938
+  roll_center_height_m:
+  - 0.0254
+  - 0.029972
+  unsprung_cg_height_m:
+  - 0.1980248
+  - 0.20113454
+  axle_roll_stiffness_nm_per_rad:
+  - 12971.095484273135
+  - 11596.26767471447
+  axle_spring_roll_stiffness_nm_per_rad:
+  - 8549.1453034876
+  - 11596.26767471447
+  axle_arb_roll_stiffness_nm_per_rad:
+  - 4421.950180785536
+  - 0.0
+  axle_roll_damping_nms_per_rad:
+  - 276.6289738039322
+  - 344.32525331510277
+  axle_roll_inertia_kg_m2:
+  - 14.894948959346124
+  - 18.34569079535177
+  sprung_roll_inertia_about_cg_kg_m2: 14.922857206199353
+  yaw_inertia_kg_m2: 110.62963131350179
+  frame_damping_nms_per_rad: 0.0
+  notes:
+  - Workbook damping entries are blank; inherit Orion shock damping and infer an effective
+    roll motion ratio from the workbook roll rates.
+  - CG height is interpreted as total-car height; sprung height is derived using inherited
+    unsprung CG heights.
+  - Workbook effective roll rates are used directly; no additional tire vertical compliance
+    is added.
+  - No full 2027 suspension hardpoints were supplied. Orion hardpoints remain a provisional
+    geometry template.
+  - Only FrameTorsionEval reads these effective stiffness and roll-center overrides.
+    Standard BobSim/Modelica workflows still derive them from provisional geometry.
+  - Control-arm masses count as sprung, matching the BobSim reduced mass projection.
+  - Roll damping = inherited shock damping * workbook effective spring roll stiffness
+    / coil spring stiffness; approximate effective motion ratio.
+  - Combined sprung roll inertia is apportioned by sprung axle mass, then shifted
+    to each roll center. This is an assumed mode shape.
+  - Aero and nonlinear tire/load feedback are excluded from this screening model.
